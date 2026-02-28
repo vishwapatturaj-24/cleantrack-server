@@ -88,7 +88,10 @@ export async function getUserComplaints(req, res) {
       totalPages: Math.ceil(total / limitNum),
     });
   } catch (error) {
-    logger.error('Get user complaints error:', error);
+    logger.error('Get user complaints error:', error.message || error);
+    if (error.code === 9 || error.message?.includes('index')) {
+      logger.error('Missing Firestore composite index. Create it in Firebase Console or deploy firestore.indexes.json');
+    }
     sendError(res, 'INTERNAL_ERROR', 'Failed to fetch complaints', 500);
   }
 }
